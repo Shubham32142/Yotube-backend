@@ -13,7 +13,7 @@ export function VideoGrid() {
     async function fetchVideos() {
       try {
         const response = await axios.get(
-          `http://localhost:3000/getVideos/${channelId}`
+          `https://youtube-backend-zdni.onrender.com/getVideos/${channelId}`
         );
         setVideos(response.data); // Assuming your response has a videos array
       } catch (err) {
