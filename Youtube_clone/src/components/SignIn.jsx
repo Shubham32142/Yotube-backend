@@ -18,7 +18,7 @@ export function SignIn() {
       const checkChannel = async () => {
         try {
           const response = await fetch(
-            `http://localhost:3000/channel/name/${storedUsername}`
+            `https://youtube-backend-zdni.onrender.com/channel/name/${storedUsername}`
           );
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {
@@ -26,7 +26,7 @@ export function SignIn() {
             setHasChannel(data.hasChannel);
             if (data.hasChannel) {
               const channelResponse = await fetch(
-                `http://localhost:3000/channel/name/${storedUsername}`
+                `https://youtube-backend-zdni.onrender.com/channel/name/${storedUsername}`
               );
               const data = await channelResponse.json();
               setChannelId(data.channelId);
