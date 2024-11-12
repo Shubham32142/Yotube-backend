@@ -27,7 +27,7 @@ export function CardDetail() {
     async function fetchUser() {
       try {
         const response = await axios.get(
-          `http://localhost:3000/User/byChannel/${channelId}`
+          `https://youtube-backend-zdni.onrender.com/User/byChannel/${channelId}`
         );
         setUser(response.data);
         setVideoId(response.data.videoId);
