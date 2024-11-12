@@ -57,7 +57,7 @@ const Channel = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:3000/createChannel`,
+        `https://youtube-backend-zdni.onrender.com/createChannel`,
         formData,
         {
           headers: {
