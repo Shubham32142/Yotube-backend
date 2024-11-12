@@ -21,7 +21,7 @@ const Channel = () => {
       if (channelId) {
         try {
           const response = await axios.get(
-            `http://localhost:3000/channel/${channelId}`
+            `https://youtube-backend-zdni.onrender.com/channel/${channelId}`
           );
           setChannel(response.data);
           setName(response.data.name);
