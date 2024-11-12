@@ -16,7 +16,7 @@ function allUsers() {
       }
 
       try {
-        const response = await fetch("http://localhost:3000/Users", {
+        const response = await fetch("https://youtube-backend-zdni.onrender.com/Users", {
           headers: {
             authorization: `Bearer ${token}`,
           },
