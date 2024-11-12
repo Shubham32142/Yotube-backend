@@ -13,7 +13,7 @@ server.listen(port, () => {
 });
 
 mongoose
-  .connect("mongodb://localhost:27017/User-database")
+  .connect(process.env.MONGODB_URL)
   .then(() => {
     console.log("Database connected successfully");
   })

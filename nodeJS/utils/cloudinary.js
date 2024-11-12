@@ -7,16 +7,11 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import process from "process";
 // Set up Cloudinary configuration using environment variables
-console.log("Cloudinary Configss:", {
+
+cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-cloudinary.config({
-  cloud_name: "djybkxoq2",
-  api_key: "952885558582619",
-  api_secret: "XOiQZU9jDE9TN6bWMzRSmjSI3xg",
 });
 
 export const uploadOnCloudinary = async (localFilePath) => {

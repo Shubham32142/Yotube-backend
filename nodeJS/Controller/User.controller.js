@@ -189,7 +189,6 @@ export function Authentication(req, res, next) {
     next();
   });
 }
-console.log("Secret key", process.env.SECRET_KEY);
 
 // Function to create a new channel
 export async function createNewChannel(req, res) {
