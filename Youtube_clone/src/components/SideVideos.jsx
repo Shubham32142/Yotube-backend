@@ -15,7 +15,7 @@ export function SideVideos() {
     async function fetchUser() {
       try {
         const response = await axios(
-          `http://localhost:3000/User/byChannel/${channelId}`
+          `https://youtube-backend-zdni.onrender.com/User/byChannel/${channelId}`
         );
         setUserId(response.data);
         if (response.data.channelId) {
