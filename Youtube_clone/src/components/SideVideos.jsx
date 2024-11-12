@@ -29,7 +29,7 @@ export function SideVideos() {
     async function fetchChannel(channelId) {
       try {
         const response = await axios(
-          `http://localhost:3000/channel/${channelId}`
+          `https://youtube-backend-zdni.onrender.com/channel/${channelId}`
         );
         setChannel(response.data);
       } catch (error) {
