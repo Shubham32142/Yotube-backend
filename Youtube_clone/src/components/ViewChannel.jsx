@@ -13,7 +13,7 @@ const ViewChannel = () => {
     const fetchChannelData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/channel/${channelId}`
+          `https://youtube-backend-zdni.onrender.com/channel/${channelId}`
         );
         setChannelData(response.data); // Assuming your API returns channel data
         setVideos(response.data.videos); // Assuming your API returns an array of videos
