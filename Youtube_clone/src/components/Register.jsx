@@ -12,7 +12,7 @@ export function Register() {
     e.preventDefault();
     try {
       // Register the user
-      const response = await axios.post("http://localhost:3000/User/register", {
+      const response = await axios.post("https://youtube-backend-zdni.onrender.com/User/register", {
         username,
         email,
         password,
