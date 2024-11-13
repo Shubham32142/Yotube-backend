@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 export function Google() {
+  let navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -15,7 +17,7 @@ export function Google() {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("username", response.data.username); // Store token
       // Redirect to home or update state to show user name
-      window.location.href = "/";
+      navigate('/');
     } catch (error) {
       console.error("Login failed", error);
     }
