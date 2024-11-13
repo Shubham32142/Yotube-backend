@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-
+import {useNavigate} from 'react-router-dom';
 export function Register() {
+  let navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,7 +28,7 @@ export function Register() {
       await checkUserChannel(userId);
 
       // Redirect to login page after registration
-      window.location.href = "/login";
+      navigate('/login');
     } catch (error) {
       console.error("Registration failed", error);
     }
