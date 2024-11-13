@@ -46,7 +46,7 @@ export function CardDetail() {
     async function fetchChannel(channelId) {
       try {
         const response = await axios.get(
-          `http://localhost:3000/channel/${channelId}`
+          `https://youtube-backend-zdni.onrender.com/channel/${channelId}`
         );
         setChannel(response.data);
       } catch (error) {
