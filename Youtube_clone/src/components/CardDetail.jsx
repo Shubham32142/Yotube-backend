@@ -10,48 +10,57 @@ import {
   faDownload,
   faShare,
   faEllipsis,
+  faPlay,
+  faPause,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Comments } from "./Comments";
-import { SideVideos } from "./SideVideos";
+import SideVideos from "./SideVideos";
 
-export function CardDetail() {
+export default function CardDetail() {
   const { channelId } = useParams();
+
   const [user, setUser] = useState(null);
   const [channel, setChannel] = useState(null);
+  const [videoId, setVideoId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [videoId, setVideoId] = useState(null);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
+  /* ──────────────────────────────────────────────
+     Fetch user → then channel
+  ────────────────────────────────────────────── */
   useEffect(() => {
     async function fetchUser() {
       try {
-        const response = await axios.get(
+        const { data } = await axios.get(
           `https://youtube-backend-zdni.onrender.com/User/byChannel/${channelId}`
         );
-        setUser(response.data);
-        setVideoId(response.data.videoId);
-        if (response.data.channelId) {
-          fetchChannel(response.data.channelId);
+
+        setUser(data);
+        setVideoId(data.videoId);
+
+        if (data.channelId) {
+          await fetchChannel(data.channelId);
         } else {
           setLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        setError("Error fetching user data");
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Error fetching video data.");
         setLoading(false);
       }
     }
 
-    async function fetchChannel(channelId) {
+    async function fetchChannel(id) {
       try {
-        const response = await axios.get(
-          `https://youtube-backend-zdni.onrender.com/channel/${channelId}`
+        const { data } = await axios.get(
+          `https://youtube-backend-zdni.onrender.com/channel/${id}`
         );
-        setChannel(response.data);
-      } catch (error) {
-        console.error("Error fetching channel data:", error);
-        setError("Error fetching channel data");
+        setChannel(data);
+      } catch (err) {
+        console.error("Error fetching channel data:", err);
+        setError("Error fetching channel data.");
       } finally {
         setLoading(false);
       }
@@ -60,113 +69,184 @@ export function CardDetail() {
     fetchUser();
   }, [channelId]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  /* ──────────────────────────────────────────────
+     Early-return UI states
+  ────────────────────────────────────────────── */
+  if (loading)
+    return (
+      <div className="flex h-screen items-center justify-center bg-skin-base">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+          <p className="text-lg text-skin-text">Loading video...</p>
+        </div>
+      </div>
+    );
 
+  if (error)
+    return (
+      <div className="flex h-screen items-center justify-center bg-skin-base">
+        <div className="text-center">
+          <p className="text-lg text-red-500 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+
+  if (!user) return null;
+
+  /* ──────────────────────────────────────────────
+     Main render
+  ────────────────────────────────────────────── */
   return (
-    <div className="flex flex-col lg:flex-row justify-between gap-5">
-      <div className="lg:flex-3 p-5 bg-white rounded-lg shadow-md w-full">
-        {user && channel && (
-          <>
-            <div className="flex flex-col gap-4">
-              <video
-                src={user.videos}
-                alt="Channel Banner"
-                className="w-full h-[230px] sm:h-[400px] md:h-[500px] lg:h-[730px] object-cover rounded-lg"
-                controls
-              />
-              <h2 className="text-xl sm:text-2xl font-semibold">
-                {user.title}
-              </h2>
-              <div className="flex flex-col md:flex-row">
-                <div className="flex items-center gap-4 w-full">
-                  <Link to={`/viewChannel/${channelId}`}>
-                    <img
-                      src={user.thumbnailUrl}
-                      alt={user.title}
-                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-white object-cover"
-                    />
-                  </Link>
-                  <div className="flex flex-col">
-                    <h3 className="text-sm sm:text-lg font-semibold text-gray-700">
-                      {channel.channelName}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-gray-500">
-                      {channel.subscribers} subscribers
-                    </p>
-                  </div>
-                  <button className="mt-3 md:mt-0 md:ml-5 px-4 sm:px-6 py-2 sm:py-3 bg-black text-white font-bold rounded-full hover:opacity-80">
-                    Subscribe
-                  </button>
-                </div>
-                <div className="flex flex-wrap justify-end md:flex-nowrap items-center gap-3 w-full py-3">
-                  <div className="flex items-center">
-                    <button
-                      className="flex items-center px-3 sm:px-4 py-1 sm:py-2 bg-gray-100 border border-gray-200 rounded-l-3xl hover:bg-gray-200"
-                      aria-label="Like this video"
-                    >
-                      <FontAwesomeIcon
-                        icon={faThumbsUp}
-                        size="lg"
-                        className="pr-1 sm:pr-2"
-                      />
-                      {user.likes}
-                    </button>
-                    <button
-                      className="flex items-center px-3 sm:px-2 py-1 sm:py-2 bg-gray-100 border border-gray-200 rounded-r-3xl hover:bg-gray-200"
-                      aria-label="Dislike this video"
-                    >
-                      <FontAwesomeIcon
-                        icon={faThumbsDown}
-                        size="lg"
-                        className="pr-1 sm:pr-2"
-                      />
-                      {user.dislikes}
-                    </button>
-                  </div>
-                  <button className="flex items-center px-3 sm:px-4 py-1 sm:py-2 bg-gray-100 border border-gray-200 rounded-full hover:bg-gray-200">
-                    <FontAwesomeIcon
-                      icon={faShare}
-                      size="lg"
-                      className="pr-1 sm:pr-2"
-                    />
-                    Share
-                  </button>
-                  <button className="flex items-center px-3 sm:px-4 py-1 sm:py-2 bg-gray-100 border border-gray-200 rounded-full hover:bg-gray-200">
-                    <FontAwesomeIcon
-                      icon={faDownload}
-                      size="lg"
-                      className="pr-1 sm:pr-2"
-                    />
-                    Download
-                  </button>
-                  <button className="flex items-center px-3 sm:px-4 py-1 sm:py-2 bg-gray-100 border border-gray-200 rounded-full hover:bg-gray-200">
-                    <FontAwesomeIcon
-                      icon={faBookmark}
-                      size="lg"
-                      className="pr-1 sm:pr-2"
-                    />
-                    Save
-                  </button>
-                  <button className="flex items-center px-2 py-1 sm:px-2 sm:py-2 bg-gray-100 border border-gray-200 rounded-full hover:bg-gray-200">
-                    <FontAwesomeIcon icon={faEllipsis} size="lg" />
-                  </button>
-                </div>
+    <div className="min-h-screen bg-skin-base text-skin-text">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4">
+        {/* Main Content */}
+        <main className="flex-1 max-w-4xl">
+          {/* Video Player */}
+          <div className="relative bg-black rounded-2xl overflow-hidden shadow-2xl mb-4">
+            <video
+              controls
+              className="w-full aspect-video"
+              poster={user.thumbnailUrl}
+              preload="metadata"
+            >
+              <source src={user.videos} type="video/mp4" />
+              <source src={user.videos} type="video/webm" />
+              <source src={user.videos} type="video/ogg" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+
+          {/* Video Title */}
+          <h1 className="text-xl lg:text-2xl font-bold text-skin-text mb-3 leading-tight">
+            {user.title}
+          </h1>
+
+          {/* Video Stats */}
+          <div className="flex flex-wrap items-center justify-between mb-4">
+            <div className="flex items-center gap-4 text-sm text-skin-sub">
+              {user.views && (
+                <span className="font-medium">
+                  {user.views.toLocaleString()} views
+                </span>
+              )}
+              {user.createdAt && (
+                <span>
+                  {new Date(user.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </span>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 mt-2 lg:mt-0">
+              <button className="flex items-center gap-2 px-4 py-2 bg-skin-muted hover:bg-gray-300 dark:hover:bg-zinc-600 rounded-full transition-colors">
+                <FontAwesomeIcon icon={faThumbsUp} className="text-sm" />
+                <span className="text-sm font-medium">Like</span>
+              </button>
+
+              <button className="flex items-center gap-2 px-4 py-2 bg-skin-muted hover:bg-gray-300 dark:hover:bg-zinc-600 rounded-full transition-colors">
+                <FontAwesomeIcon icon={faThumbsDown} className="text-sm" />
+                <span className="text-sm font-medium">Dislike</span>
+              </button>
+
+              <button className="flex items-center gap-2 px-4 py-2 bg-skin-muted hover:bg-gray-300 dark:hover:bg-zinc-600 rounded-full transition-colors">
+                <FontAwesomeIcon icon={faShare} className="text-sm" />
+                <span className="text-sm font-medium">Share</span>
+              </button>
+
+              <button className="flex items-center gap-2 px-4 py-2 bg-skin-muted hover:bg-gray-300 dark:hover:bg-zinc-600 rounded-full transition-colors">
+                <FontAwesomeIcon icon={faDownload} className="text-sm" />
+                <span className="text-sm font-medium">Download</span>
+              </button>
+
+              <button className="p-2 bg-skin-muted hover:bg-gray-300 dark:hover:bg-zinc-600 rounded-full transition-colors">
+                <FontAwesomeIcon icon={faEllipsis} />
+              </button>
+            </div>
+          </div>
+
+          {/* Channel Info */}
+          <div className="flex items-center justify-between p-4 bg-skin-muted rounded-xl mb-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                {channel?.channelName?.charAt(0) || "C"}
               </div>
-              <div className="w-full py-4 bg-gray-100 rounded-lg flex flex-col items-start">
-                <span className="text-gray-600 pr-4">{user.views} views</span>
-                <span className="text-gray-600">{user.uploadDate}</span>
-                <p className="text-gray-700 mt-2">{user.description}</p>
+
+              <div>
+                {channel?.channelName && (
+                  <Link
+                    to={`/viewChannel/${channel.channelId}`}
+                    className="font-semibold text-lg text-skin-text hover:text-red-500 transition-colors"
+                  >
+                    {channel.channelName}
+                  </Link>
+                )}
+                {channel?.subscribers && (
+                  <p className="text-sm text-skin-sub">
+                    {channel.subscribers.toLocaleString()} subscribers
+                  </p>
+                )}
               </div>
             </div>
-          </>
-        )}
-        {videoId && <Comments videoId={videoId} comments={user.comments} />}
-      </div>
-      <div className="lg:flex-1 p-5 w-full lg:w-auto">
-        <SideVideos />
+
+            <button className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full font-medium transition-colors">
+              Subscribe
+            </button>
+          </div>
+
+          {/* Description */}
+          {user.description && (
+            <div className="bg-skin-muted rounded-xl p-4 mb-6">
+              <div className="mb-2">
+                <span className="text-sm font-medium text-skin-sub">
+                  {user.views?.toLocaleString()} views • {user.uploadDate}
+                </span>
+              </div>
+
+              <div className="text-skin-text">
+                <p
+                  className={`whitespace-pre-wrap ${
+                    !showFullDescription ? "line-clamp-3" : ""
+                  }`}
+                >
+                  {user.description}
+                </p>
+
+                {user.description.length > 200 && (
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="mt-2 text-sm font-medium text-skin-sub hover:text-skin-text"
+                  >
+                    {showFullDescription ? "Show less" : "Show more"}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Comments Section */}
+          <div className="bg-skin-muted rounded-xl p-4">
+            <Comments videoId={videoId} />
+          </div>
+        </main>
+
+        {/* Sidebar */}
+        <aside className="w-full lg:w-[400px] lg:sticky lg:top-4 lg:h-fit">
+          <div className="bg-skin-muted rounded-xl p-4">
+            <h3 className="font-semibold text-skin-text mb-4">Recommended</h3>
+            <SideVideos />
+          </div>
+        </aside>
       </div>
     </div>
   );
 }
-export default CardDetail;

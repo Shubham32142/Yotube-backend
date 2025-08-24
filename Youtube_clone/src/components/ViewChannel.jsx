@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { VideoGrid } from "./ChannelVid";
+import ChannelVid from "./ChannelVid";
 
 const ViewChannel = () => {
   const { channelId } = useParams(); // Get channelId from URL params
@@ -56,7 +56,7 @@ const ViewChannel = () => {
         </button>
       </div>
 
-      <VideoGrid />
+      <ChannelVid />
     </div>
   );
 };

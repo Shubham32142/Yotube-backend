@@ -4,7 +4,7 @@ import "./index.css";
 import { Provider } from "react-redux";
 import { store } from "./components/Store.js";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Cards } from "./components/Cards.jsx";
+import Cards from "./components/Cards.jsx";
 import { lazy, Suspense } from "react";
 const ViewChannel = lazy(() => import("./components/ViewChannel.jsx"));
 const CardDetail = lazy(() => import("./components/CardDetail.jsx"));

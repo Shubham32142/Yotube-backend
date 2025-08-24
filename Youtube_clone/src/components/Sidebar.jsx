@@ -19,146 +19,181 @@ import {
   faFlag,
   faQuestionCircle,
   faComment,
+  faFire,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export function Sidebar({ isOpen }) {
+  const location = useLocation();
+
+  const MenuItem = ({ icon, label, path, isActive }) => (
+    <Link to={path}>
+      <li
+        className={`flex items-center px-4 py-3 mx-2 rounded-lg
+                     transition-all duration-200 cursor-pointer
+                     ${
+                       isActive
+                         ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                         : "text-skin-text hover:bg-skin-muted"
+                     }`}
+      >
+        <FontAwesomeIcon
+          icon={icon}
+          className={`text-lg ${!isOpen ? "mx-auto" : "mr-4"}`}
+        />
+        <span className={`font-medium truncate ${!isOpen ? "hidden" : ""}`}>
+          {label}
+        </span>
+      </li>
+    </Link>
+  );
+
   return (
-    <div
-      className={`fixed bg-white h-[95vh] transition-all hover:scroll-smooth mt-12 ease-in-out duration-300 ${
-        isOpen ? "w-[210px]" : "w-[60px]"
-      }`}
+    <aside
+      className={`fixed left-0 top-16 bg-skin-base border-r border-gray-200 
+                      dark:border-zinc-800 h-[calc(100vh-4rem)] z-40
+                      transition-all duration-300 ease-in-out overflow-hidden
+                      ${isOpen ? "w-64" : "w-16"}`}
     >
-      {/* Home, Shorts, Subscriptions Section */}
-      <ul className="mb-4">
-        <Link to="/">
-          <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg active:bg-blue-100">
-            <FontAwesomeIcon icon={faHome} className="text-xl mr-4" />
-            <p className={`${!isOpen && "hidden"} truncate`}>Home</p>
-          </li>
-        </Link>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faTv} className="text-xl mr-4" />
-          <p className={`${!isOpen && "hidden"} truncate`}>Shorts</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faShoppingCart} className="text-xl mr-4" />
-          <p className={`${!isOpen && "hidden"} truncate`}>Subscriptions</p>
-        </li>
-      </ul>
+      <div className="h-full overflow-y-auto py-4 mt-10">
+        {/* Main Navigation */}
+        <nav className="mb-4">
+          <MenuItem
+            icon={faHome}
+            label="Home"
+            path="/"
+            isActive={location.pathname === "/"}
+          />
+          <MenuItem
+            icon={faTv}
+            label="Shorts"
+            path="/shorts"
+            isActive={location.pathname === "/shorts"}
+          />
+          <MenuItem
+            icon={faShoppingCart}
+            label="Subscriptions"
+            path="/subscriptions"
+            isActive={location.pathname === "/subscriptions"}
+          />
+        </nav>
 
-      {/* Profile and History Section */}
-      <ul className="mb-4">
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faUser} className="text-xl mr-4" />
-          <p className={`${!isOpen && "hidden"} truncate`}>You</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faHistory} className="text-xl mr-4" />
-          <p className={`${!isOpen && "hidden"} truncate`}>History</p>
-        </li>
-      </ul>
+        {/* Divider */}
+        <hr className="my-4 mx-4 border-gray-200 dark:border-zinc-700" />
 
-      {/* Sign In Section */}
-      {isOpen && (
-        <div className="px-4 mb-4">
-          <p className="text-sm text-gray-600 mb-2">
-            Sign in to like videos, comment, and subscribe.
-          </p>
-          <button className="w-[100px] border border-gray-300 text-blue-600 py-2 rounded-full flex items-center justify-center hover:bg-blue-100">
-            <FontAwesomeIcon icon={faCircleUser} className="mr-2" />
-            Sign in
-          </button>
-        </div>
-      )}
+        {/* Personal Section */}
+        <nav className="mb-4">
+          <MenuItem
+            icon={faUser}
+            label="You"
+            path="/profile"
+            isActive={location.pathname === "/profile"}
+          />
+          <MenuItem
+            icon={faHistory}
+            label="History"
+            path="/history"
+            isActive={location.pathname === "/history"}
+          />
+        </nav>
 
-      {/* Explore Section */}
-      <ul className={`mb-4 ${!isOpen && "hidden"}`}>
-        <h4 className="text-xs uppercase text-gray-400 pl-4 mb-2">Explore</h4>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faTrophy} className="text-xl mr-4" />
-          <p>Trending</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faShoppingCart} className="text-xl mr-4" />
-          <p>Shopping</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faMusic} className="text-xl mr-4" />
-          <p>Music</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faFilm} className="text-xl mr-4" />
-          <p>Movies</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faTv} className="text-xl mr-4" />
-          <p>Live</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faGamepad} className="text-xl mr-4" />
-          <p>Gaming</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faNewspaper} className="text-xl mr-4" />
-          <p>News</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faTrophy} className="text-xl mr-4" />
-          <p>Sports</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faSchool} className="text-xl mr-4" />
-          <p>Courses</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faTshirt} className="text-xl mr-4" />
-          <p>Fashion & Beauty</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faPodcast} className="text-xl mr-4" />
-          <p>Podcasts</p>
-        </li>
-      </ul>
+        {/* Explore Section */}
+        {isOpen && (
+          <>
+            <h4
+              className="text-sm font-semibold text-skin-sub uppercase tracking-wide 
+                           px-6 py-2 mt-4 mb-1"
+            >
+              Explore
+            </h4>
+            <nav className="mb-4">
+              <MenuItem
+                icon={faFire}
+                label="Trending"
+                path="/trending"
+                isActive={false}
+              />
+              <MenuItem
+                icon={faShoppingCart}
+                label="Shopping"
+                path="/shopping"
+                isActive={false}
+              />
+              <MenuItem
+                icon={faMusic}
+                label="Music"
+                path="/music"
+                isActive={false}
+              />
+              <MenuItem
+                icon={faFilm}
+                label="Movies"
+                path="/movies"
+                isActive={false}
+              />
+              <MenuItem
+                icon={faGamepad}
+                label="Gaming"
+                path="/gaming"
+                isActive={false}
+              />
+              <MenuItem
+                icon={faNewspaper}
+                label="News"
+                path="/news"
+                isActive={false}
+              />
+              <MenuItem
+                icon={faTrophy}
+                label="Sports"
+                path="/sports"
+                isActive={false}
+              />
+              <MenuItem
+                icon={faSchool}
+                label="Learning"
+                path="/learning"
+                isActive={false}
+              />
+              <MenuItem
+                icon={faTshirt}
+                label="Fashion & Beauty"
+                path="/fashion"
+                isActive={false}
+              />
+              <MenuItem
+                icon={faPodcast}
+                label="Podcasts"
+                path="/podcasts"
+                isActive={false}
+              />
+            </nav>
+          </>
+        )}
 
-      {/* More from YouTube Section */}
-      <ul className={`mb-4 ${!isOpen && "hidden"}`}>
-        <h4 className="text-xs uppercase text-gray-400 pl-4 mb-2">
-          More from YouTube
-        </h4>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faTrophy} className="text-xl mr-4" />
-          <p>YouTube Premium</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faMusic} className="text-xl mr-4" />
-          <p>YouTube Music</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faTrophy} className="text-xl mr-4" />
-          <p>YouTube Kids</p>
-        </li>
-      </ul>
-
-      {/* Settings Section */}
-      <ul className="mb-4">
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faCog} className="text-xl mr-4" />
-          <p className={`${!isOpen && "hidden"} truncate`}>Settings</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faFlag} className="text-xl mr-4" />
-          <p className={`${!isOpen && "hidden"} truncate`}>Report history</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faQuestionCircle} className="text-xl mr-4" />
-          <p className={`${!isOpen && "hidden"} truncate`}>Help</p>
-        </li>
-        <li className="flex items-center p-4 text-sm font-bold text-gray-600 cursor-pointer hover:bg-gray-200 rounded-lg">
-          <FontAwesomeIcon icon={faComment} className="text-xl mr-4" />
-          <p className={`${!isOpen && "hidden"} truncate`}>Send feedback</p>
-        </li>
-      </ul>
-    </div>
+        {/* Settings Section */}
+        <hr className="my-4 mx-4 border-gray-200 dark:border-zinc-700" />
+        <nav>
+          <MenuItem
+            icon={faCog}
+            label="Settings"
+            path="/settings"
+            isActive={location.pathname === "/settings"}
+          />
+          <MenuItem
+            icon={faQuestionCircle}
+            label="Help"
+            path="/help"
+            isActive={location.pathname === "/help"}
+          />
+          <MenuItem
+            icon={faComment}
+            label="Send feedback"
+            path="/feedback"
+            isActive={location.pathname === "/feedback"}
+          />
+        </nav>
+      </div>
+    </aside>
   );
 }

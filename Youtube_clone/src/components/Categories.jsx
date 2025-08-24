@@ -1,103 +1,76 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom"; // Import useLocation
-import allUsers from "./allUsers"; // This is assumed to be a hook
+import { useMemo, useRef } from "react";
+import { useLocation } from "react-router-dom";
+import useAllUsers from "./useAllUsers";
 
 export function Categories({ selectedCategory, onCategorySelect }) {
-  const containerRef = useRef(null);
-  const location = useLocation(); // Get the current location
+  const { users, loading } = useAllUsers();
+  const location = useLocation();
+  const stripRef = useRef(null);
 
-  // State to store categories fetched from the API
-  const [category, setCategory] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-
-  // Call the custom hook directly in the component
-  const { users, loading, error } = allUsers(); // Call it directly, assuming it's a hook
-
-  // Extract categories when users are fetched
-  useEffect(() => {
-    if (users && users.length > 0) {
-      const extractedCategories = users.map((user) => user.categories).flat(); // Assuming 'category' exists in user
-      setCategory(["All", ...new Set(extractedCategories)]); // Add "All" as the first category
-      setFiltered(users);
-    }
+  /* --------------------------------------------------
+     Build category list once users arrive
+  -------------------------------------------------- */
+  const categories = useMemo(() => {
+    if (!users?.length) return ["All"];
+    const extracted = users.flatMap((u) => u.categories || []).filter(Boolean);
+    return ["All", ...Array.from(new Set(extracted))];
   }, [users]);
-  console.log(users.categories);
-  useEffect(() => {
-    if (selectedCategory === "All") {
-      // If "All" is selected, reset to show all users
-      setFiltered(users);
-    } else {
-      // Filter users based on the selected category
-      const newFilteredUsers = users.filter((user) =>
-        user.categories.includes(selectedCategory)
-      );
-      setFiltered(newFilteredUsers);
-    }
-  }, [selectedCategory, users]); // This useEffect will run whenever 'users' or selectedCategory changes
 
-  // Scroll the container by a certain amount (e.g., 300px)
-  const scrollLeft = () => {
-    containerRef.current.scrollBy({ left: -300, behavior: "smooth" });
-  };
+  /* --------------------------------------------------
+     Early-return states
+  -------------------------------------------------- */
+  if (loading) return <p className="text-center">Loading categories…</p>;
 
-  const scrollRight = () => {
-    containerRef.current.scrollBy({ left: 300, behavior: "smooth" });
-  };
+  /* Hide strip on watch page */
+  if (location.pathname.startsWith("/User/byChannel/")) return null;
 
-  // Handle loading and error states (optional)
-  if (loading) {
-    return <p>Loading categories...</p>;
-  }
-
-  if (error) {
-    return <p>Error loading categories: {error.message}</p>;
-  }
-
-  // Check the current path and decide whether to render categories
-  const shouldDisplayCategories =
-    !location.pathname.startsWith("/User/byChannel/");
+  /* --------------------------------------------------
+     Scroll helpers
+  -------------------------------------------------- */
+  const scrollLeft = () =>
+    stripRef.current.scrollBy({ left: -300, behavior: "smooth" });
+  const scrollRight = () =>
+    stripRef.current.scrollBy({ left: 300, behavior: "smooth" });
 
   return (
-    <div className="relative flex items-center">
-      {shouldDisplayCategories && (
-        <>
-          <button
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-400 text-white w-10 h-10 rounded-full flex items-center justify-center"
-            onClick={scrollLeft}
+    <nav className="relative flex items-center gap-2 px-2 py-3 bg-skin-base text-skin-text">
+      {/* left chevron */}
+      <button
+        onClick={scrollLeft}
+        className="hidden md:block px-2 text-lg font-bold"
+      >
+        ‹
+      </button>
+
+      {/* category pills */}
+      <ul
+        ref={stripRef}
+        className="flex overflow-x-auto no-scrollbar gap-2 w-full"
+      >
+        {categories.map((cat) => (
+          <li
+            key={cat}
+            onClick={() => onCategorySelect(cat)}
+            className={`flex-shrink-0 cursor-pointer px-4 py-1 rounded-lg whitespace-nowrap
+              ${
+                cat === selectedCategory
+                  ? "bg-black text-white dark:bg-zinc-200 dark:text-black"
+                  : "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
+              }`}
           >
-            &lt;
-          </button>
-          <div
-            className="flex overflow-x-auto scrollbar-hide whitespace-nowrap w-full px-4 py-2"
-            ref={containerRef}
-          >
-            <div className="flex gap-2 px-10">
-              {/* Render categories dynamically */}
-              {category.map((category, index) => (
-                <button
-                  key={index}
-                  className={`px-4 py-2 rounded-full text-sm cursor-pointer whitespace-nowrap ${
-                    selectedCategory === category
-                      ? "bg-black text-white"
-                      : "bg-gray-200"
-                  }`}
-                  onClick={() => onCategorySelect(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
-          <button
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-400 text-white w-10 h-10 rounded-full flex items-center justify-center"
-            onClick={scrollRight}
-          >
-            &gt;
-          </button>
-        </>
-      )}
-    </div>
+            {cat}
+          </li>
+        ))}
+      </ul>
+
+      {/* right chevron */}
+      <button
+        onClick={scrollRight}
+        className="hidden md:block px-2 text-lg font-bold"
+      >
+        ›
+      </button>
+    </nav>
   );
 }

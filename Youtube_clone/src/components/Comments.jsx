@@ -62,14 +62,14 @@ export function Comments({ videoId, commentId }) {
   };
 
   return (
-    <div className="w-full p-6 bg-gray-100">
+    <div className="w-full p-6 bg-skin-base text-skin-text">
       <form onSubmit={handleCommentSubmit} className="flex items-center mb-6">
         <input
           type="text"
           placeholder="Add a comment..."
           value={newComment}
           onChange={handleCommentChange}
-          className="w-full p-2 border-b border-gray-300 outline-none focus:border-blue-500 transition-colors"
+          className="w-full p-2 border-b border-gray-300 bg-skin-base text-skin-text outline-none focus:border-blue-500 transition-colors"
         />
         <button
           type="submit"
@@ -82,7 +82,7 @@ export function Comments({ videoId, commentId }) {
       <div className="space-y-4">
         {comments.map((comment) => (
           <div
-            className="flex flex-col p-4 bg-white rounded-lg shadow-md"
+            className="flex flex-col p-4 bg-skin-base text-skin-text rounded-lg shadow-md"
             key={comment.commentId}
           >
             <div className="flex items-center mb-2">
@@ -103,7 +103,7 @@ export function Comments({ videoId, commentId }) {
               {editMode.id === comment.commentId ? (
                 <form onSubmit={handleEditSubmit} className="flex items-center">
                   <input
-                    className="flex-grow p-1 border-b border-gray-400 focus:border-blue-500 outline-none transition-colors"
+                    className="flex-grow p-1 border-b  bg-skin-base text-skin-text border-gray-400 focus:border-blue-500 outline-none transition-colors"
                     value={editMode.text}
                     onChange={(e) =>
                       setEditMode({ ...editMode, text: e.target.value })

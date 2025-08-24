@@ -1,41 +1,57 @@
 /* eslint-disable react/prop-types */
+import { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
 
-export function Search({ setQuery }) {
-  const [searchInput, setSearchInput] = useState("");
+export default function Search({ setQuery }) {
+  const [input, setInput] = useState("");
+  const timeoutRef = useRef(null);
 
-  function handleSearchClick() {
-    setQuery(searchInput.trim() ? searchInput.toLowerCase() : "");
-  }
+  /* --------------------------------------------------
+     Debounce keystrokes → 300 ms
+  -------------------------------------------------- */
+  useEffect(() => {
+    clearTimeout(timeoutRef.current);
 
-  function handleInputChange(e) {
-    const value = e.target.value;
-    setSearchInput(value);
+    timeoutRef.current = setTimeout(() => {
+      const trimmed = input.trim().toLowerCase();
+      setQuery(trimmed);
+    }, 300);
 
-    if (!value.trim()) {
-      setQuery("");
-    }
-  }
+    return () => clearTimeout(timeoutRef.current);
+  }, [input, setQuery]);
 
-  const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} size="xl" />;
+  /* --------------------------------------------------
+     Handlers
+  -------------------------------------------------- */
+  const runSearch = () => {
+    setQuery(input.trim().toLowerCase());
+  };
 
+  const onKeyDown = (e) => {
+    if (e.key === "Enter") runSearch();
+  };
+
+  /* --------------------------------------------------
+     Render
+  -------------------------------------------------- */
   return (
-    <div className="flex items-center">
+    <div className="flex  bg-skin-base text-skin-text items-center gap-2 w-full max-w-md">
       <input
-        type="search"
+        type="text"
         placeholder="Search"
-        value={searchInput}
-        onChange={handleInputChange}
-        onKeyDown={(e) => e.key === "Enter" && handleSearchClick()}
-        className="w-3/5 md:w-custom-width h-12 border border-gray-400 outline-none bg-transparent text-black px-4 rounded-l-full font-semibold shadow-md focus:border-blue-600"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={onKeyDown}
+        className="flex-1 px-4 py-2 border  bg-skin-base text-skin-text border-gray-300 rounded-l-full focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+
       <button
-        onClick={handleSearchClick}
-        className="w-16 h-12 border-l-0 border border-gray-400 outline-none bg-gray-100 hover:bg-gray-200 cursor-pointer flex items-center justify-center rounded-r-full"
+        onClick={runSearch}
+        className=" 0 px-4 py-2  bg-skin-base text-skin-text rounded-r-full border border-gray-300"
+        aria-label="Search"
       >
-        {searchIcon}
+        <FontAwesomeIcon icon={faMagnifyingGlass} />
       </button>
     </div>
   );

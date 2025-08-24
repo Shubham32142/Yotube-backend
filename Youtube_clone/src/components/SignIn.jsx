@@ -38,7 +38,7 @@ export function SignIn() {
       };
       checkChannel();
     }
-  }, []);
+  }, [channelId]);
 
   const handleLogout = () => {
     localStorage.removeItem("username");
@@ -65,7 +65,7 @@ export function SignIn() {
   };
 
   return (
-    <div className="relative flex items-center">
+    <div className="relative  bg-skin-base text-skin-text flex items-center">
       <FontAwesomeIcon icon={faEllipsisVertical} size="xl" />
       {username ? (
         <>

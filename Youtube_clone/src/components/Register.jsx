@@ -1,131 +1,150 @@
 import { useState } from "react";
 import axios from "axios";
-import {useNavigate} from 'react-router-dom';
-export function Register() {
-  let navigate = useNavigate();
+import { Link, useNavigate } from "react-router-dom";
+
+export default function Register() {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [hasChannel, setHasChannel] = useState(false); // State for checking if the user has a channel
-  const [channelId, setChannelId] = useState(""); // State to store the channel ID
+  const [hasChannel, setHasChannel] = useState(false);
+  const [channelId, setChannelId] = useState("");
 
+  /* ────────────────────────────────────────────── */
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      // Register the user
-      const response = await axios.post("https://youtube-backend-zdni.onrender.com/User/register", {
-        username,
-        email,
-        password,
-      });
+      const { data } = await axios.post(
+        "https://youtube-backend-zdni.onrender.com/User/register",
+        { username, email, password }
+      );
 
-      // Store the username and user ID in local storage
       localStorage.setItem("username", username);
-      const userId = response.data.userId; // Assuming the response includes the user ID
-      localStorage.setItem("userId", userId);
+      localStorage.setItem("userId", data.userId);
 
-      // Check if the user has a channel
-      await checkUserChannel(userId);
+      await checkUserChannel(data.userId);
 
-      // Redirect to login page after registration
-      navigate('/login');
-    } catch (error) {
-      console.error("Registration failed", error);
+      navigate("/login");
+    } catch (err) {
+      console.error("Registration failed:", err);
     }
   };
 
   const checkUserChannel = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:3000/channel/${userId}`);
-      const data = await response.json();
+      const res = await fetch(
+        `https://youtube-backend-zdni.onrender.com/channel/${userId}`
+      );
+      const data = await res.json();
 
-      if (data.hasChannel) {
-        // Update state to show "View Channel" button
-        setHasChannel(true);
-        // Store the channel ID
-        setChannelId(data.channelId); // Assuming the response contains the channel ID
-      } else {
-        // Show "Create Channel" button
-        setHasChannel(false);
-      }
-    } catch (error) {
-      console.error("Error checking channel:", error);
+      setHasChannel(data.hasChannel);
+      if (data.hasChannel) setChannelId(data.channelId);
+    } catch (err) {
+      console.error("Error checking channel:", err);
     }
   };
+  /* ────────────────────────────────────────────── */
 
   return (
-    <div className="max-w-md mx-auto my-24 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-center text-gray-800 text-2xl mb-6">Register</h2>
-      <form onSubmit={handleRegister} className="register-form">
-        <div className="mb-4">
-          <label
-            htmlFor="username"
-            className="block mb-1 font-bold text-gray-600"
-          >
+    <section
+      className="max-w-md mx-auto my-20 px-8 py-10
+                        bg-skin-base text-skin-text rounded-xl shadow-lg"
+    >
+      <h2 className="text-2xl font-semibold text-center mb-8">
+        Create your account
+      </h2>
+
+      <form onSubmit={handleRegister} className="space-y-6">
+        {/* Username */}
+        <div>
+          <label htmlFor="username" className="block mb-1 font-medium">
             Username
           </label>
           <input
-            type="text"
             id="username"
-            placeholder="Username"
+            type="text"
+            required
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
-            className="w-full p-3 border border-gray-300 rounded-md focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md px-4 py-3 bg-skin-muted
+                       border border-gray-300 dark:border-zinc-700
+                       focus:outline-none focus:ring-2 focus:ring-red-500"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="email" className="block mb-1 font-bold text-gray-600">
+
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className="block mb-1 font-medium">
             Email
           </label>
           <input
-            type="email"
             id="email"
-            placeholder="Email"
+            type="email"
+            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full p-3 border border-gray-300 rounded-md focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md px-4 py-3 bg-skin-muted
+                       border border-gray-300 dark:border-zinc-700
+                       focus:outline-none focus:ring-2 focus:ring-red-500"
           />
         </div>
-        <div className="mb-4">
-          <label
-            htmlFor="password"
-            className="block mb-1 font-bold text-gray-600"
-          >
+
+        {/* Password */}
+        <div>
+          <label htmlFor="password" className="block mb-1 font-medium">
             Password
           </label>
           <input
-            type="password"
             id="password"
-            placeholder="Password"
+            type="password"
+            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full p-3 border border-gray-300 rounded-md focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md px-4 py-3 bg-skin-muted
+                       border border-gray-300 dark:border-zinc-700
+                       focus:outline-none focus:ring-2 focus:ring-red-500"
           />
         </div>
+
+        {/* Submit */}
         <button
           type="submit"
-          className="w-full p-3 bg-red-600 text-white rounded-md font-bold hover:bg-red-700"
+          className="w-full py-3 rounded-md font-semibold
+                     bg-red-600 hover:bg-red-700 text-white
+                     transition-colors"
         >
           Register
         </button>
       </form>
+
+      {/* Channel info */}
       {hasChannel && (
-        <div className="mt-4">
-          <p className="text-gray-700">
-            You have a channel! Channel ID: {channelId}
+        <div className="mt-6 p-4 rounded-md bg-skin-muted">
+          <p className="mb-3">
+            You already have a channel! <br />
+            Channel ID: <span className="font-semibold">{channelId}</span>
           </p>
           <button
-            onClick={() => (window.location.href = `/viewChannel/${channelId}`)}
-            className="mt-2 p-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+            onClick={() => navigate(`/viewChannel/${channelId}`)}
+            className="py-2 px-4 rounded-md bg-blue-600 hover:bg-blue-700
+                       text-white font-medium"
           >
             View Channel
           </button>
         </div>
       )}
-    </div>
+
+      {/* Divider */}
+      <hr className="my-8 border-gray-300 dark:border-zinc-700" />
+
+      {/* Login prompt */}
+      <p className="text-center">
+        Already have an account?{" "}
+        <Link to="/login" className="text-red-600 hover:underline font-medium">
+          Log In
+        </Link>
+      </p>
+    </section>
   );
 }
-export default Register;

@@ -27,7 +27,7 @@ export function UserSidebar({ isOpen }) {
     <div
       className={`${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      } w-[250px] h-[95vh] bg-white fixed overflow-hidden transition-transform duration-300`}
+      } w-[250px] h-[95vh]   bg-skin-base text-skin-text fixed overflow-hidden transition-transform duration-300`}
     >
       <ul className="mb-4">
         <li className="flex items-center px-5 py-2 text-gray-600 hover:bg-gray-100 hover:rounded-md active:bg-blue-50 active:text-black">
